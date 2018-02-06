@@ -1,5 +1,5 @@
 {
-  "name": "gutpbuilder",
+  "name": "gulpbuilder",
   "version": "1.0.0",
   "description": "auto build",
   "main": "index.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Dima0508/gutpBuilder.git"
+    "url": "git+https://github.com/Dima0508/gulpBuilder.git"
   },
   "author": "Dmitdy Lazenyuk",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Dima0508/gutpBuilder/issues"
+    "url": "https://github.com/Dima0508/gulpBuilder/issues"
   },
-  "homepage": "https://github.com/Dima0508/gutpBuilder#readme",
+  "homepage": "https://github.com/Dima0508/gulpBuilder#readme",
   "devDependencies": {
     "bower": "^1.8.2",
     "gulp": "^3.9.1"
