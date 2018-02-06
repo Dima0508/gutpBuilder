@@ -1,0 +1,17 @@
+{
+  "name": "gutpbuilder",
+  "description": "auto build",
+  "main": "index.js",
+  "authors": [
+    "Dmitdy Lazenyuk"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/Dima0508/gutpBuilder",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
