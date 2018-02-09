@@ -1,0 +1,129 @@
+@charset "utf-8";
+
+@import "../../scss_helper/normalizefix";
+@import "../../scss_helper/mixins";
+@import "../../scss_helper/vareable";
+
+
+/*-------   Fonts   -------*/
+
+
+/*=======   MAIN      =======*/
+
+body {
+  color: $main-color-text;
+  background: $main-color-bg;
+  font-family: 'Arial';
+  font-weight: $regular;
+  font-size: $base-font-size;
+  line-height: 1.2;
+  height: 100%;
+  &.no-scroll{
+    overflow: hidden;
+  }
+}
+
+body {
+  //width: $fullWid + px; //remove late
+  //overflow: hidden;
+}
+
+header,
+section,
+footer{
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.wrap{
+  max-width: $wrap + px;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  @include wrap(15px);
+}
+
+a {
+  color: $main-color-link;
+  text-decoration: none;
+  transition: $hover_t;
+  &:hover{
+    transition: $hover_t;
+    color: $main-color-link-hov;
+  }
+}
+
+.btn{
+  background: $main-color-btn-bg;
+  color: $main-color-btn-text;
+  width: 100%;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+  transition: $hover_t;
+  &:hover{
+    transition: $hover_t;
+
+  }
+}
+
+
+
+a {
+  color: $main-color-link;
+  text-decoration: none;
+  transition: $hover_t;
+  &:hover{
+    color: $main-color-link;
+    transition: $hover_t;
+    text-decoration: none;
+  }
+}
+
+[class^='ic']{
+  display: inline-block;
+  vertical-align: middle;
+  content: '';
+}
+
+@mixin ic() {
+  display: inline-block;
+  vertical-align: middle;
+  content: '';
+}
+
+.section-title{
+
+}
+
+/*======= / MAIN end  =======*/
+
+
+/*=======   MEDIA      =======*/
+
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+}
+
+.video-container iframe, .video-container object, .video-container embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/*======= / MEDIA end  =======*/
+
