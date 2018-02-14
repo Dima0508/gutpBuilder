@@ -9,11 +9,15 @@ var gulp = require('gulp'),
     browserSync = require('browser-sync'),
     watch = require('gulp-watch'),
     changed = require('gulp-changed'),
-    //pug
+    gulpCopy = require('gulp-copy'),
+    rename  = require('gulp-rename'),
+    //blocks
     pug = require('gulp-pug'),
-    pugBeautify = require('gulp-pug-beautify'),
+    prettify = require('gulp-prettify'),
     //js
     uglify = require('gulp-uglify'),
+    browserify = require('gulp-browserify'),
+    include  = require("gulp-include"),
     //img
     imagemin = require('gulp-imagemin'),
     imageminJpegRecompress = require('imagemin-jpeg-recompress'),
@@ -35,31 +39,22 @@ var path = {
             'bower_components/jquery/dist/jquery.min.js'
         ]
     },
-
-    common: {
-        css: [
-            'app/css/**/main.css',
-            'app/css/**/*.css'
-        ],
-        js: [
-            'app/pug/**/*.js'
-        ]
-    },
-
     copy: {
-        other: 'app/*.*',
-        fonts: 'app/fonts/**/*.*'
+        input :[
+            'app/fonts/**/*.*'
+        ],
+        output: 'dist/'
     },
 
     app: {
-        pug: 'app/pug/*.pug',
-        scss: 'app/pug/**/*.scss',
+        pug: 'app/*.pug',
+        scss: 'app/style/*.scss',
+        js: 'app/js/*.js',
         img: 'app/img/**/*.*',
-        css: 'app/css/',
         fonts: 'app/fonts/**/*.*'
     },
     dist: {
-        main: 'dist',
+        main: 'dist/',
         html: 'dist/',
         css: 'dist/css',
         js: 'dist/js',
@@ -67,30 +62,29 @@ var path = {
         fonts: 'dist/fonts'
     },
 
-    clean: {
-       build: [
-           'dist/',
-           'app/css/'
-       ]
-    },
+    clean: ['dist/'],
+
+    sourcemap: './maps',
 
     watch: {
-        pug: ['app/pug/**/*.pug'],
+        pug: [
+            'app/blocks/**/*.pug',
+            'app/*.pug'
+            ],
         sass: [
-            'app/pug/**/*.scss',
-            'app/scss_helper/**/*.scss'
+            'app/blocks/**/*.scss',
+            'app/style/**/*.scss'
         ],
         img: ['app/img/**/*.*'],
-        fonts: ['app/fonts/**/*.*'],
-        cssCommon: ['app/css/**/*.css'],
-        cssVendor: ['bower_components/**/*.css'],
-        jsVendor: ['bower_components/**/*.js'],
-        jsCommon: ['app/pug/**/*.js'],
-        browserReload: ['dist']
+        js: [
+            'app/blocks/**/*.js',
+            'app/js/*.js'
+        ],
+        dist: ['dist/']
     }
 };
 
-//pug convert
+//PUG convert
 gulp.task('pug', function(){
     return gulp.src(path.app.pug)
         .pipe(plumber({errorHandler: notify.onError({
@@ -101,9 +95,10 @@ gulp.task('pug', function(){
         .pipe(pug({
             pretty: true
         }))
-        .pipe(pugBeautify({
-            omit_empty: true,
-            tab_size: 4
+        .pipe(prettify({
+            indent_size: 4
+            //indent_inner_html: true,
+            //unformatted: ['br', 'i', 'a']
         }))
         .pipe(gulp.dest(path.dist.html))
         .pipe(browserSync.reload({stream: true}))
@@ -116,40 +111,39 @@ gulp.task('sass', function () {
                 message: "Error: <%= error.message %>",
                 title: "SASS ERROR"
             })}))
-        .pipe(changed(path.app.css))
+        .pipe(changed(path.dist.css))
         .pipe(sourcemap.init())
-        .pipe(sass({outputStyle: 'nested'}))
+        .pipe(sass({outputStyle: 'compact'})) // nested, expanded, compact, compressed
         .pipe(autoprefixer({
             browsers: ['last 2 versions'],
             cascade: true
         }))
-        .pipe(sourcemap.write('.'))
-        .pipe(gulp.dest(path.app.css))
+        //.pipe(rename({suffix: '.min'}))
+        .pipe(sourcemap.write(path.sourcemap))
+        .pipe(gulp.dest(path.dist.css))
         .pipe(browserSync.reload({stream: true}))
 });
 
-//common css
-gulp.task('cssCommon:concat', ['sass'] , function() {
-    return gulp.src(path.common.css)
+//common js
+gulp.task('jsCommon', function() {
+    return gulp.src(path.app.js)
         .pipe(plumber({errorHandler: notify.onError({
                 message: "Error: <%= error.message %>",
-                title: "CSS COMMON CONCAT ERROR"
+                title: "JS COMMON CONCAT ERROR"
             })}))
-        .pipe(changed(path.dist.css))
-        .pipe(sourcemap.init({loadMaps: true}))
-        .pipe(concat('common.min.css'))
-        .pipe(csso({
-            restructure: false,
-            sourceMap: true,
-            debug: true
-        }))
-        .pipe(sourcemap.write('.'))
-        .pipe(gulp.dest(path.dist.css))
+        .pipe(changed(path.dist.js))
+        .pipe(sourcemap.init())
+        .pipe(include())
+        .pipe(uglify())
+        //.pipe(rename({suffix: '.min'}))
+        .pipe(sourcemap.write(path.sourcemap))
+        .pipe(gulp.dest(path.dist.js))
         .pipe(browserSync.reload({stream: true}));
 });
 
+
 //vendor css
-gulp.task('cssVendor:concat', function() {
+gulp.task('cssVendor', function() {
     return gulp.src(path.vendor.css)
         .pipe(plumber({errorHandler: notify.onError({
                 message: "Error: <%= error.message %>",
@@ -163,13 +157,13 @@ gulp.task('cssVendor:concat', function() {
             sourceMap: true,
             debug: true
         }))
-        .pipe(sourcemap.write('.'))
+        .pipe(sourcemap.write(path.sourcemap))
         .pipe(gulp.dest(path.dist.css))
         .pipe(browserSync.reload({stream: true}));
 });
 
 //vendor min js
-gulp.task('jsVendor:concat', function() {
+gulp.task('jsVendor', function() {
     return gulp.src(path.vendor.js)
         .pipe(plumber({errorHandler: notify.onError({
                 message: "Error: <%= error.message %>",
@@ -179,23 +173,7 @@ gulp.task('jsVendor:concat', function() {
         .pipe(sourcemap.init())
         .pipe(concat('vendor.min.js'))
         .pipe(uglify())
-        .pipe(sourcemap.write('.'))
-        .pipe(gulp.dest(path.dist.js))
-        .pipe(browserSync.reload({stream: true}));
-});
-
-//common min js
-gulp.task('jsCommon:concat', function() {
-    return gulp.src(path.common.js)
-        .pipe(plumber({errorHandler: notify.onError({
-                message: "Error: <%= error.message %>",
-                title: "JS COMMON CONCAT ERROR"
-            })}))
-        .pipe(changed(path.dist.js))
-        .pipe(sourcemap.init())
-        .pipe(concat('common.min.js'))
-        .pipe(uglify())
-        .pipe(sourcemap.write('.'))
+        .pipe(sourcemap.write(path.sourcemap))
         .pipe(gulp.dest(path.dist.js))
         .pipe(browserSync.reload({stream: true}));
 });
@@ -227,24 +205,21 @@ gulp.task('imgmin', function() {
         .pipe(browserSync.reload({stream: true}));
 });
 
-// copy fonts
-gulp.task('copyFonts', function() {
-    return gulp.src(path.copy.fonts)
-        .pipe(changed(path.dist.fonts))
-        .pipe(gulp.dest(path.dist.fonts))
-        .pipe(browserSync.reload({stream: true}));
-});
-// copy other
-gulp.task('copyOther', function() {
-    return gulp.src(path.copy.other)
-        .pipe(changed(path.dist.main))
-        .pipe(gulp.dest(path.dist.main))
+// copy
+gulp.task('copy', function() {
+    return gulp.src(path.copy.input)
+        .pipe(plumber({errorHandler: notify.onError({
+                message: "Error: <%= error.message %>",
+                title: "COPY ERROR"
+            })}))
+        .pipe(changed(path.copy.output))
+        .pipe(gulpCopy(path.copy.output, { prefix: 1 }))
         .pipe(browserSync.reload({stream: true}));
 });
 
 //clean
-gulp.task('cleanDist', function() {
-    return del.sync(path.clean.build); // Удаляем папку dist перед сборкой
+gulp.task('clean', function() {
+    return del.sync(path.clean); // Удаляем папку dist перед сборкой
 });
 
 // browser sync
@@ -259,14 +234,13 @@ gulp.task('browser-sync', function () {
 
 // build
 gulp.task('build', [
-    'cleanDist',
+    'clean',
     'pug',
-    'cssVendor:concat',
-    'cssCommon:concat',
-    'jsVendor:concat',
-    'jsCommon:concat',
-    'copyFonts',
-    'copyOther',
+    'sass',
+    'jsCommon',
+    'cssVendor',
+    'jsVendor',
+    'copy',
     'imgmin'],
     function(){
         console.log('Build Complete !!!');
@@ -275,12 +249,11 @@ gulp.task('build', [
 gulp.task('watch', [
     'browser-sync',
     'pug',
-    'cssVendor:concat',
-    'cssCommon:concat',
-    'jsVendor:concat',
-    'jsCommon:concat',
-    'copyFonts',
-    'copyOther',
+    'sass',
+    'jsCommon',
+    'cssVendor',
+    'jsVendor',
+    'copy',
     'imgmin'
     ], function(){
     watch(path.watch.pug, function(event, cb) {
@@ -289,30 +262,21 @@ gulp.task('watch', [
     watch(path.watch.sass, function(event, cb) {
         gulp.start('sass');
     });
-    watch(path.watch.cssCommon, function(event, cb) {
-        gulp.start('cssCommon:concat');
+    watch(path.watch.js, function(event, cb) {
+        gulp.start('jsCommon');
     });
-    watch(path.watch.cssVendor, function(event, cb) {
-        gulp.start('cssVendor:concat');
+    watch(path.vendor.css, function(event, cb) {
+        gulp.start('cssVendor');
     });
-    watch(path.watch.jsCommon, function(event, cb) {
-        gulp.start('jsCommon:concat');
+    watch(path.vendor.js, function(event, cb) {
+        gulp.start('jsVendor');
     });
-    watch(path.watch.jsVendor, function(event, cb) {
-        gulp.start('jsVendor:concat');
-    });
-    watch(path.watch.fonts, function(event, cb) {
-        gulp.start('copyFonts');
-    });
-    watch(path.copy.other, function(event, cb) {
-        gulp.start('copyOther');
+    watch(path.copy.input, function(event, cb) {
+        gulp.start('copy');
     });
     watch(path.watch.img, function(event, cb) {
         gulp.start('imgmin');
     });
-    // watch(path.watch.browserReload, function(event, cb) {
-    //     ///////////////////
-    // });
 });
 //default
 gulp.task('default',['watch']);

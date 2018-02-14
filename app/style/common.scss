@@ -1,0 +1,9 @@
+//========== healper ===========//
+@import "helper/mixins";
+@import "helper/vareable";
+@import "helper/normalizefix";
+//========== Blocks ===========//
+@import "../blocks/head/main";
+@import "../blocks/header/header";
+//--- write style
+@import "../blocks/footer/footer";
