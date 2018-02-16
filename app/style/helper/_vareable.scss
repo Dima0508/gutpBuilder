@@ -1,11 +1,7 @@
 //*--====   variables   ====--*/
-
 $fontPath: '../fonts/';
-
-//wrap
-$wrap: 1140;
-$wrapS: 1140;
-
+//size
+$wrapper: 1140;
 $fullWid: 1920;
 //font size
 $base-font-size: 16px;
@@ -17,23 +13,9 @@ $black-col: #000;
 $white-col: #fff;
 $read-col: #c00;
 
-//body
-$main-color-bg: #F5F5F5;
-$main-color-text: #3b3b3b;
-$alt-text-col: #3b3434;
-//link
-$main-color-link: #3b3b3b;
-$main-color-link-hov: #c00;
-//button
-$main-color-btn-text: #3b3b3b;
-$main-color-btn-bg: #c00;
-
-
-//google font
+//font weight
 $thin: 100;
 $thin-italic: 100i;
-$light: 200;
-$light-italic: 200i;
 $light: 300;
 $light-italic: 300i;
 $regular: 400;
