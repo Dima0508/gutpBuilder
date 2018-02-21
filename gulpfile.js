@@ -62,7 +62,10 @@ var path = {
         fonts: 'dist/fonts'
     },
 
-    clean: ['dist/'],
+    clean:{
+        dist: ['dist/'],
+        maps: ['dist/css/maps', 'dist/js/maps']
+    },
 
     sourcemap: './maps',
 
@@ -113,9 +116,9 @@ gulp.task('sass', function () {
             })}))
         .pipe(changed(path.dist.css))
         .pipe(sourcemap.init())
-        .pipe(sass({outputStyle: 'compact'})) // nested, expanded, compact, compressed
+        .pipe(sass({outputStyle: 'nested'})) // nested, expanded, compact, compressed
         .pipe(autoprefixer({
-            browsers: ['last 2 versions'],
+            browsers: ['last 20 versions', 'ie 11', 'ie > 11'],
             cascade: true
         }))
         //.pipe(rename({suffix: '.min'}))
@@ -192,12 +195,12 @@ gulp.task('imgmin', function() {
             imageminJpegRecompress({
                 loops: 5,
                 min: 80,
-                max: 95,
-                quality:'medium'
+                max: 99,
+                quality:'veryhigh' //low, medium, high and veryhigh.
             }),
             imagemin.svgo(),
             imagemin.optipng({optimizationLevel: 3}),
-            pngquant({quality: '80-95', speed: 5})
+            pngquant({quality: '80-99', speed: 5})
         ],{
             verbose: true
         }))
@@ -219,7 +222,10 @@ gulp.task('copy', function() {
 
 //clean
 gulp.task('clean', function() {
-    return del.sync(path.clean); // Удаляем папку dist перед сборкой
+    return del.sync(path.clean.dist); // Удаляем папку dist перед сборкой
+});
+gulp.task('cleanMap', function() {
+    return del.sync(path.clean.maps); // Удаляем maps
 });
 
 // browser sync
@@ -243,6 +249,7 @@ gulp.task('build', [
     'copy',
     'imgmin'],
     function(){
+        gulp.start('cleanMap');
         console.log('Build Complete !!!');
 });
 // watch
