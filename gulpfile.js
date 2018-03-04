@@ -118,7 +118,7 @@ gulp.task('sass', function () {
         .pipe(sourcemap.init())
         .pipe(sass({outputStyle: 'nested'})) // nested, expanded, compact, compressed
         .pipe(autoprefixer({
-            browsers: ['last 20 versions', 'ie 11', 'ie > 11'],
+            browsers: ['last 20 versions', 'ie > 11'],
             cascade: true
         }))
         //.pipe(rename({suffix: '.min'}))
