@@ -36,7 +36,8 @@ var path = {
             'bower_components/normalize-css/normalize.css'
         ],
         js: [
-            'bower_components/jquery/dist/jquery.min.js'
+            'bower_components/jquery/dist/jquery.min.js',
+            'bower_components/jquery-migrate/jquery-migrate.js'
         ]
     },
     copy: {
