@@ -1,8 +1,15 @@
 # Gulp Builder
 
 Инструмент для разработки сайтов основанный на
-[Gulp^3.9.1](https://www.npmjs.com/package/gulp/v/3.9.1)
+[Gulp^3.9.1](https://www.npmjs.com/package/gulp/v/3.9.1),
 [Bower^1.8.2](https://bower.io/).
+
+Препроцессоры:
+
+- PUG.
+- SCSS.
+
+Так же производится оптимизация ассетов при сборке картинки, js, css и тд.
 
 Для запуска и сборки проекта нужен `node` версии `8.17.0`.
 
@@ -85,7 +92,7 @@ npm run build
 ### Установка зависимостей через Bower
 
 ```sh
-.\node_modules\.bin\bower install <package-name> 
+node_modules/bower/bin/bower install <package-name> 
 ```
 
 Подключаются в `gulpfile.js`
