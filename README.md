@@ -1,8 +1,14 @@
 # Gulp Builder
-## Gulp Сборщик
+
+Инструмент для разработки сайтов основанный на
+[Gulp^3.9.1](https://www.npmjs.com/package/gulp/v/3.9.1)
+[Bower^1.8.2](https://bower.io/).
+
+Для запуска и сборки проекта нужен `node` версии `8.17.0`.
 
 ## Структура папок и файлов
-```
+
+```text
 |-app/                      # исходники
 |   |-blocks/
 |   |   |-footer/
@@ -58,9 +64,41 @@
 
 **.gitkeep** можно удалить. Это чтобы залить пустые папки на github
 
-**gulp или gulp watch** - чтобы запустить для для разработки.
+## Установка зависимостей
 
-**gulp build** - чтобы собрать.
+```sh
+npm install
+```
 
+### Запустить проект на локальном сервере для разработки
 
+```sh
+npm run dev
+```
 
+### Окончательная сборка проекта с минификацией файлов
+
+```sh
+npm run build
+```
+
+### Установка зависимостей через Bower
+
+```sh
+.\node_modules\.bin\bower install <package-name> 
+```
+
+Подключаются в `gulpfile.js`
+
+```js
+vendor:{
+    css: [
+        'bower_components/reset.scss/reset.css',
+        'bower_components/normalize-css/normalize.css'
+    ],
+    js: [
+        'bower_components/jquery/dist/jquery.min.js',
+        'bower_components/jquery-migrate/jquery-migrate.js'
+    ]
+},
+```
